@@ -1,14 +1,13 @@
 package com.vu.service.impl;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vu.service.base.Connection;
 import com.vu.service.dto.FineCarDto;
 import com.vu.service.dto.PointLicenseDto;
+import com.vu.utils.ServiceUtil;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,6 +22,13 @@ import java.util.Optional;
 public class DrivingInquiryService {
     private static final String BASE_URL = "https://api.tosanboom.com:4432/v1";
 
+    private final ServiceUtil serviceUtil;
+
+    @Autowired
+    public DrivingInquiryService(ServiceUtil serviceUtil) {
+        this.serviceUtil = serviceUtil;
+    }
+
     public PointLicenseDto getPointLicenseNumberInquiry(String licenseNumber) {
         PointLicenseDto pointLicenseDto = new PointLicenseDto();
         try {
@@ -33,29 +39,14 @@ public class DrivingInquiryService {
             url.append(licenseNumber);
             url.append("/inquiry");
 
-            Request request = new Request.Builder().url(String.valueOf(url))
-                    .addHeader("App-Key", "12345")
-                    .addHeader("Device-Id", "123456789")
-                    .addHeader("Token-Id", "e95322d8e84fee716c94380db8d0b86a")
-                    .addHeader("Accept", "application/json")
-                    .addHeader("Accept-Language", "fa")
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Client-Ip-Address", "192.168.1.1")
-                    .addHeader("Client-Platform-Type", "WEB")
-                    .addHeader("Client-User-Id", "09121234567")
-                    .addHeader("Client-User-Agent", "Mozilla Firefox 65.0.2")
-                    .addHeader("Client-Device-Id", "192.168.1.1")
-                    .get().build();
+            Request request = serviceUtil.getRequest(url);
 
-            Response response = new Connection()
-                    .getSSLConnect("123456", "tosanboom.jks").newCall(request).execute();
+            Response response = serviceUtil.getResponse(request);
 
             Optional<ResponseBody> responseBodyVal = Optional.ofNullable(response.body());
             if (responseBodyVal.isPresent()) {
                 String responseBody = responseBodyVal.get().string();
-                ObjectMapper jsonMapper = new ObjectMapper();
-                jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                jsonMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                ObjectMapper jsonMapper = serviceUtil.getObjectMapper();
                 pointLicenseDto = jsonMapper.readValue(responseBody, PointLicenseDto.class);
             }
 
@@ -79,29 +70,14 @@ public class DrivingInquiryService {
             url.append(barCode);
             url.append("/inquiry");
 
-            Request request = new Request.Builder().url(String.valueOf(url))
-                    .addHeader("App-Key", "12345")
-                    .addHeader("Device-Id", "123456789")
-                    .addHeader("Token-Id", "e95322d8e84fee716c94380db8d0b86a")
-                    .addHeader("Accept", "application/json")
-                    .addHeader("Accept-Language", "fa")
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Client-Ip-Address", "192.168.1.1")
-                    .addHeader("Client-Platform-Type", "WEB")
-                    .addHeader("Client-User-Id", "09121234567")
-                    .addHeader("Client-User-Agent", "Mozilla Firefox 65.0.2")
-                    .addHeader("Client-Device-Id", "192.168.1.1")
-                    .get().build();
+            Request request = serviceUtil.getRequest(url);
 
-            Response response = new Connection()
-                    .getSSLConnect("123456", "tosanboom.jks").newCall(request).execute();
+            Response response = serviceUtil.getResponse(request);
 
             Optional<ResponseBody> responseBodyVal = Optional.ofNullable(response.body());
             if (responseBodyVal.isPresent()) {
                 String responseBody = responseBodyVal.get().string();
-                ObjectMapper jsonMapper = new ObjectMapper();
-                jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                jsonMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                ObjectMapper jsonMapper = serviceUtil.getObjectMapper();
                 fineCarDto = jsonMapper.readValue(responseBody, FineCarDto.class);
             }
 

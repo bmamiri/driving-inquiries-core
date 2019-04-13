@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
@@ -33,6 +34,8 @@ public class Connection {
         trustFactory.init(keyStore);
 
         sslContext.init(factory.getKeyManagers(), trustFactory.getTrustManagers(), new SecureRandom());
+
+        HTTP_CLIENT.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustFactory.getTrustManagers()[0]);
 
         return HTTP_CLIENT.connectTimeout(200, TimeUnit.SECONDS)
                 .readTimeout(200, TimeUnit.SECONDS)
