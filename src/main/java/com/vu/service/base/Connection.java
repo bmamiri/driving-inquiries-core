@@ -35,11 +35,9 @@ public class Connection {
 
         sslContext.init(factory.getKeyManagers(), trustFactory.getTrustManagers(), new SecureRandom());
 
-        HTTP_CLIENT.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustFactory.getTrustManagers()[0]);
-
         return HTTP_CLIENT.connectTimeout(200, TimeUnit.SECONDS)
                 .readTimeout(200, TimeUnit.SECONDS)
-                .sslSocketFactory(sslContext.getSocketFactory())
+                .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustFactory.getTrustManagers()[0])
                 .build();
     }
 }
